@@ -1,8 +1,9 @@
 
-https://jefrete.github.io/juego_hm/
+SILABAS_JUEGO_1.0.0
 # https://jefrete.github.io/juego_hm/
 Juego de Sílabas
 
+Completa la silaba
 Aplicación web sencilla para que los niños de primaria practiquen las sílabas.
 
 ## Cómo usar
