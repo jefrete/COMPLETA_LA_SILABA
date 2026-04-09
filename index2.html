@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Sílabas - Accesible</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --primary: 234 179 8;
+        }
+
+        body {
+            font-family: 'Poppins', system_ui, sans-serif;
+        }
+
+        .tail-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .accessibility-panel {
+            background: linear-gradient(180deg, #1e2937, #0f172a);
+            border: 3px solid #60a5fa;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+        }
+
+        .option-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .option-btn:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .option-btn:active {
+            transform: scale(0.95);
+        }
+
+        .heart {
+            transition: all 0.3s ease;
+        }
+
+        .progress-fill {
+            transition: width 1s ease-in-out;
+        }
+
+        .result-screen, .game-over {
+            animation: fadeInScale 0.4s ease forwards;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .accessibility-btn {
+            transition: all 0.25s ease;
+        }
+
+        .accessibility-btn.active {
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen py-8">
+
+    <div class="tail-container flex flex-col lg:flex-row gap-8 px-4 max-w-7xl mx-auto">
+
+        <!-- PANEL DE ACCESIBILIDAD -->
+        <div class="accessibility-panel w-full lg:w-80 rounded-3xl p-6 shadow-2xl text-white flex-shrink-0 h-fit lg:sticky lg:top-8">
+            <div class="flex items-center gap-3 mb-6">
+                <i class="fas fa-universal-access text-4xl"></i>
+                <h2 class="text-2xl font-bold tracking-tight">Accesibilidad</h2>
+            </div>
+
+            <div class="space-y-3">
+                <button id="voiceToggle" 
+                        class="accessibility-btn w-full flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white py-4 px-6 rounded-2xl font-semibold text-lg">
+                    <span class="text-2xl">🔊</span>
+                    <span id="voiceStatus">Voz: OFF</span>
+                </button>
+
+                <button id="highContrast" 
+                        class="accessibility-btn w-full flex items-center justify-center gap-3 bg-slate-700 hover:bg-slate-800 py-4 px-6 rounded-2xl font-semibold text-lg">
+                    👁️ Alto Contraste
+                </button>
+
+                <button id="largeText" 
+                        class="accessibility-btn w-full flex items-center justify-center gap-3 bg-amber-600 hover:bg-amber-700 py-4 px-6 rounded-2xl font-semibold text-lg">
+                    📖 Texto Grande
+                </button>
+
+                <button id="readAll" 
+                        class="accessibility-btn w-full flex items-center justify-center gap-3 bg-violet-600 hover:bg-violet-700 py-4 px-6 rounded-2xl font-semibold text-lg">
+                    📢 Leer Todo
+                </button>
+
+                <button id="skipLevel" 
+                        class="accessibility-btn w-full flex items-center justify-center gap-3 bg-orange-600 hover:bg-orange-700 py-4 px-6 rounded-2xl font-semibold text-lg">
+                    ⏭️ Saltar Nivel
+                </button>
+
+                <button id="pauseVoice" 
+                        class="accessibility-btn w-full flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 py-4 px-6 rounded-2xl font-semibold text-lg">
+                    ⏸️ Pausar Voz
+                </button>
+            </div>
+
+            <div class="mt-8 bg-white/10 backdrop-blur-md rounded-2xl p-5 text-sm leading-relaxed border border-white/20">
+                💡 <strong>Tip:</strong> Una sílaba es la unidad básica de pronunciación que se dice en un solo golpe de voz.
+            </div>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="flex-1 max-w-2xl mx-auto lg:mx-0">
+            
+            <!-- Header con stats -->
+            <div class="bg-white rounded-3xl shadow-xl p-6 mb-8 border border-white/60">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-gradient-to-br from-yellow-400 to-amber-500 text-white px-5 py-2 rounded-2xl font-bold flex items-center gap-2 shadow">
+                            <i class="fas fa-trophy"></i>
+                            <span id="score" class="text-2xl">0</span>
+                        </div>
+                        <div class="bg-gradient-to-br from-emerald-400 to-teal-500 text-white px-5 py-2 rounded-2xl font-bold flex items-center gap-2 shadow">
+                            <i class="fas fa-fire"></i>
+                            <span id="streak" class="text-2xl">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Corazones -->
+                    <div id="hearts" class="flex gap-2"></div>
+                </div>
+
+                <!-- Barra de progreso -->
+                <div class="mb-3">
+                    <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                        <div id="progressFill" 
+                             class="h-full bg-gradient-to-r from-emerald-500 via-blue-500 to-violet-500 rounded-full progress-fill"
+                             style="width: 20%"></div>
+                    </div>
+                </div>
+                <div class="text-center text-gray-600 font-medium">
+                    Nivel <span id="currentLevel" class="font-bold text-gray-800">1</span> de 
+                    <span id="totalLevels" class="font-bold text-gray-800">5</span>
+                </div>
+            </div>
+
+            <!-- Área del juego -->
+            <div class="game-card rounded-3xl shadow-2xl p-10 border border-white/70">
+
+                <!-- Pantalla de juego -->
+                <div id="gameScreen">
+                    <div id="characterEmoji" class="text-7xl mb-6 text-center">🏠</div>
+                    
+                    <div id="characterName" 
+                         class="text-6xl font-black text-center text-gray-800 tracking-wider mb-3">
+                    </div>
+                    
+                    <div id="characterHint" 
+                         class="text-xl text-center text-gray-600 italic mb-10 min-h-[3.5rem]">
+                    </div>
+
+                    <div class="text-lg font-semibold text-gray-700 mb-6 text-center">
+                        ¿Qué sílaba falta?
+                    </div>
+
+                    <div id="options" class="grid grid-cols-2 gap-4"></div>
+                </div>
+
+                <!-- Pantalla de resultado -->
+                <div id="resultScreen" class="hidden text-center">
+                    <div id="resultIcon" class="text-8xl mb-6"></div>
+                    <div id="resultText" class="text-5xl font-black mb-8"></div>
+                    <div id="correctAnswer" 
+                         class="text-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 p-6 rounded-2xl font-semibold">
+                    </div>
+                </div>
+
+                <!-- Pantalla de fin de juego -->
+                <div id="gameOverScreen" class="hidden text-center">
+                    <div id="gameOverEmoji" class="text-8xl mb-6"></div>
+                    <div id="gameOverTitle" class="text-5xl font-black mb-6 text-gray-800"></div>
+                    
+                    <div class="bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-3xl p-8 mb-10 shadow-inner">
+                        <div class="text-6xl font-black mb-2" id="finalScore">0</div>
+                        <div class="text-xl opacity-90" id="finalLevels"></div>
+                    </div>
+
+                    <button onclick="resetGame()" 
+                            class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-2xl font-bold py-6 rounded-3xl shadow-xl transition-all duration-300 hover:scale-105">
+                        🔄 JUGAR DE NUEVO
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATOS DEL JUEGO ====================
+        const levels = [
+            { word: "casa",   display: "CA__", missing: "SA", options: ["SA", "SE", "SI", "SO"], emoji: "🏠", hint: "Lugar donde vivimos." },
+            { word: "pato",   display: "PA__", missing: "TO", options: ["TO", "TA", "TE", "TI"], emoji: "🦆", hint: "Animal que dice cuac." },
+            { word: "mesa",   display: "ME__", missing: "SA", options: ["SA", "SE", "SI", "SO"], emoji: "🍽️", hint: "Mueble donde comemos." },
+            { word: "taza",   display: "TA__", missing: "ZA", options: ["ZA", "CA", "SA", "CHA"], emoji: "☕", hint: "Se usa para tomar café o té." },
+            { word: "pelota", display: "__LOTA", missing: "PE", options: ["PE", "PA", "PI", "PO"], emoji: "⚽", hint: "Se usa para jugar al fútbol." }
+        ];
+
+        // ==================== VARIABLES ====================
+        let currentLevel = 0;
+        let score = 0;
+        let streak = 0;
+        let hearts = 3;
+        let voiceEnabled = false;
+        let highContrast = false;
+        let largeText = false;
+
+        let synth = null;
+
+        // ==================== INICIALIZACIÓN ====================
+        function initVoice() {
+            if ('speechSynthesis' in window) {
+                synth = window.speechSynthesis;
+            }
+        }
+
+        function speak(text, rate = 0.95) {
+            if (!voiceEnabled || !synth) return;
+            synth.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-AR';
+            utterance.rate = rate;
+            utterance.pitch = 1.05;
+            synth.speak(utterance);
+        }
+
+        // ==================== FUNCIONES DE ACCESIBILIDAD ====================
+        function setupAccessibility() {
+            // Toggle voz
+            document.getElementById('voiceToggle').addEventListener('click', () => {
+                voiceEnabled = !voiceEnabled;
+                const status = document.getElementById('voiceStatus');
+                status.textContent = voiceEnabled ? 'Voz: ON' : 'Voz: OFF';
+                document.getElementById('voiceToggle').classList.toggle('active', voiceEnabled);
+                if (voiceEnabled) speak('Voz activada');
+            });
+
+            // Alto contraste
+            document.getElementById('highContrast').addEventListener('click', () => {
+                highContrast = !highContrast;
+                document.documentElement.classList.toggle('high-contrast', highContrast);
+                document.getElementById('highContrast').classList.toggle('active', highContrast);
+                speak(highContrast ? 'Alto contraste activado' : 'Alto contraste desactivado');
+            });
+
+            // Texto grande
+            document.getElementById('largeText').addEventListener('click', () => {
+                largeText = !largeText;
+                document.documentElement.classList.toggle('large-text', largeText);
+                document.getElementById('largeText').classList.toggle('active', largeText);
+                speak(largeText ? 'Texto grande activado' : 'Texto normal activado');
+            });
+
+            // Leer todo
+            document.getElementById('readAll').addEventListener('click', () => {
+                const level = levels[currentLevel];
+                speak(`Nivel ${currentLevel + 1}. Pista: ${level.hint}. Completa: ${level.display}. Opciones: ${level.options.join(', ')}`, 1.0);
+            });
+
+            // Saltar nivel
+            document.getElementById('skipLevel').addEventListener('click', () => {
+                if (currentLevel < levels.length - 1) {
+                    currentLevel++;
+                    score += 40;
+                    updateDisplay();
+                    speak(`Nivel ${currentLevel + 1}`);
+                }
+            });
+
+            // Pausar voz
+            document.getElementById('pauseVoice').addEventListener('click', () => {
+                if (synth) synth.cancel();
+            });
+        }
+
+        // ==================== ACTUALIZAR INTERFAZ ====================
+        function updateDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('currentLevel').textContent = currentLevel + 1;
+            document.getElementById('totalLevels').textContent = levels.length;
+            document.getElementById('progressFill').style.width = `${((currentLevel) / levels.length) * 100}%`;
+
+            // Corazones
+            const heartsContainer = document.getElementById('hearts');
+            heartsContainer.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const heart = document.createElement('div');
+                heart.className = `heart text-4xl transition-all ${i < hearts ? 'text-red-500 scale-110' : 'text-gray-300'}`;
+                heart.innerHTML = '❤️';
+                heartsContainer.appendChild(heart);
+            }
+
+            const level = levels[currentLevel];
+            document.getElementById('characterEmoji').textContent = level.emoji;
+            document.getElementById('characterName').textContent = level.display;
+            document.getElementById('characterHint').textContent = level.hint;
+
+            // Opciones
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            level.options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full py-8 text-3xl font-black rounded-2xl shadow-md bg-gradient-to-br from-indigo-600 to-violet-600 text-white hover:from-indigo-700 hover:to-violet-700 focus:ring-4 focus:ring-violet-400`;
+                btn.textContent = option;
+                btn.onclick = () => handleAnswer(option);
+                optionsContainer.appendChild(btn);
+            });
+
+            if (voiceEnabled) {
+                speak(`Nivel ${currentLevel + 1}. ${level.hint}`);
+            }
+        }
+
+        function handleAnswer(selected) {
+            const level = levels[currentLevel];
+            const isCorrect = selected.toUpperCase() === level.missing.toUpperCase();
+
+            // Deshabilitar botones
+            document.querySelectorAll('#options button').forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent.toUpperCase() === level.missing.toUpperCase()) {
+                    btn.classList.add('!bg-emerald-500', '!ring-4', '!ring-emerald-400');
+                }
+            });
+
+            document.getElementById('gameScreen').classList.add('hidden');
+            const resultScreen = document.getElementById('resultScreen');
+            resultScreen.classList.remove('hidden');
+
+            document.getElementById('resultIcon').textContent = isCorrect ? '🎉' : '😕';
+            document.getElementById('resultText').textContent = isCorrect ? '¡Excelente!' : '¡Casi!';
+            document.getElementById('resultText').className = `text-5xl font-black mb-8 ${isCorrect ? 'text-emerald-600' : 'text-orange-600'}`;
+            document.getElementById('correctAnswer').textContent = `La palabra completa es: ${level.word}`;
+
+            if (voiceEnabled) {
+                speak(isCorrect ? `¡Muy bien! La palabra es ${level.word}` : `La palabra correcta es ${level.word}`, 1.0);
+            }
+
+            setTimeout(() => {
+                if (isCorrect) {
+                    score += 100;
+                    streak++;
+                    currentLevel++;
+                    if (currentLevel >= levels.length) {
+                        showGameOver(true);
+                    } else {
+                        showNextLevel();
+                    }
+                } else {
+                    hearts--;
+                    streak = 0;
+                    if (hearts <= 0) {
+                        showGameOver(false);
+                    } else {
+                        showNextLevel();
+                    }
+                }
+            }, voiceEnabled ? 4200 : 2800);
+        }
+
+        function showNextLevel() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            updateDisplay();
+        }
+
+        function showGameOver(isWin) {
+            document.getElementById('resultScreen').classList.add('hidden');
+            const gameOver = document.getElementById('gameOverScreen');
+            gameOver.classList.remove('hidden');
+
+            document.getElementById('gameOverEmoji').textContent = isWin ? '🏆' : '💔';
+            document.getElementById('gameOverTitle').textContent = isWin ? '¡Felicitaciones!' : '¡Fin del juego!';
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalLevels').textContent = `Completaste ${currentLevel} de ${levels.length} niveles`;
+
+            if (voiceEnabled) {
+                speak(isWin 
+                    ? `¡Felicitaciones! Obtuviste ${score} puntos.` 
+                    : `Juego terminado. Tu puntuación fue ${score} puntos.`);
+            }
+        }
+
+        function resetGame() {
+            currentLevel = 0;
+            score = 0;
+            streak = 0;
+            hearts = 3;
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            updateDisplay();
+            if (voiceEnabled) speak('Juego reiniciado. ¡Éxito!');
+        }
+
+        // ==================== INICIO DEL JUEGO ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            initVoice();
+            setupAccessibility();
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>
