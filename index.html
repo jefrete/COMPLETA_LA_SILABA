@@ -1,453 +1,298 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juego de Sílabas - Accesible</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Juego de Sílabas - Accesible Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Mejoras Tailwind */
-        html {
-            font-size: 16px;
-            background: #000000;
-        }
-
-        body {
-            display: flex;
-            background: white;
-
-        }
-
-        .container {
-            width: 60%;
-            display: flex;
-            background: #ffffff;
-            flex-direction: column;
-            gap: 10px;
-            padding: 2rem;
-
-        }
-
-        header {
-            height: 20%;
-            display: flex;
-            flex-wrap: nowrap;
-            width: 100%;    
-            background: rgb(255, 255, 255) !important;
-            flex-direction: column;
-            margin: auto;
-        }
-
-        footer {
-            width: 100%;
-        }
-
-        .game-card {    
-            width: 100%;
-
-        }
-
-        .accessibility-panel {
-            display: flex;
-            flex-direction: column;
-            width: 20%;
-
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 10px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-            border: 2px solid #3b82f6;
-        }
-
-        .accessibility-btn {
-
-            @apply w-full py-3 px-2 rounded-xl font-bold text-4xl transition-all duration-300 mb-2 gap-2 shadow-lg;
-            padding-bottom: 1rem;
-            padding-top: 1rem;
-            font-size: large;
-            font-weight: 700;
-        }
-
-        .accessibility-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
-        }
-
-        .accessibility-btn.active {
-            background: #3b82f6 !important;
-            color: white !important;
-        }
-
-        .high-contrast {
-            filter: contrast(2) brightness(1.2);
-        }
-
-        .large-text {
-            font-size: 1.3em;
-        }
-
-        .voice-btn {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .voice-btn.active {
-            background: linear-gradient(135deg, #059669, #047857);
-        }
-
-        .skip-btn {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-
-        /* Focus visible mejorado */
-        *:focus-visible {
-            outline: 4px solid #3b82f6;
-            outline-offset: 2px;
-        }
+        .high-contrast { filter: contrast(1.5) brightness(1.1); }
+        .high-contrast body { background: #000 !important; }
+        .large-text { font-size: 1.25rem; }
+        .progress-transition { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        *:focus-visible { outline: 4px solid #3b82f6 !important; outline-offset: 4px; }
     </style>
 </head>
+<body class="bg-slate-100 min-h-screen font-sans text-slate-800 transition-colors duration-300">
 
-<body class="bg-gradient-to-br from-indigo-50 to-purple-100 min-h-screen p-5 font-sans antialiased">
+    <div class="flex flex-col lg:flex-row min-h-screen p-4 gap-6 max-w-7xl mx-auto">
+        
+        <aside class="w-full lg:w-72 space-y-4 order-2 lg:order-1" role="region" aria-label="Controles de accesibilidad">
+            <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-2xl border-b-4 border-blue-600">
+                <h3 class="text-xl font-black mb-4 flex items-center gap-2">
+                    <span class="text-2xl">♿</span> ACCESIBILIDAD
+                </h3>
+                
+                <div class="grid grid-cols-1 gap-3">
+                    <button id="voiceToggle" class="flex items-center justify-between p-3 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all border border-slate-700 active:scale-95">
+                        <span class="font-bold">🔊 Voz</span>
+                        <span id="voiceStatus" class="bg-red-500 px-2 py-1 rounded text-xs uppercase">OFF</span>
+                    </button>
 
-    <!-- PANEL DE ACCESIBILIDAD -->
-    <div class="accessibility-panel" role="region" aria-label="Controles de accesibilidad">
-        <h3 class="text-2xl font-bold text-white mb-2 flex items-center gap-1">
-            ♿ ACCESIBILIDAD
-        </h3>
-        <button class="accessibility-btn voice-btn" id="voiceToggle" aria-label="Activar/desactivar voz alta">
-            🔊 <span id="voiceStatus">Voz OFF</span>
-        </button>
-        <button class="accessibility-btn bg-blue-600 hover:bg-blue-700" id="highContrast" aria-label="Alto contraste">
-            👁️ Alto contraste
-        </button>
-        <button class="accessibility-btn bg-orange-500 hover:bg-orange-600" id="largeText" aria-label="Texto grande">
-            📖 Texto grande
-        </button>
-        <button class="accessibility-btn skip-btn" id="skipLevel" aria-label="Saltar nivel">
-            ⏭️ Saltar nivel
-        </button>
-        <button class="accessibility-btn bg-gray-600 hover:bg-gray-700" id="readAll" aria-label="Leer todo">
-            📢 Leer todo
-        </button>
-        <button class="accessibility-btn bg-red-500 hover:bg-red-600" id="pauseVoice" aria-label="Pausar voz">
-            ⏸️ Pausar voz
-        </button>
-        <footer class="tip-box bg-white/70 backdrop-blur-xl rounded-3xl p-4 mt-6 shadow-xl border border-white/50"
-                id="tipBox">
-                💡 <strong class="text-xl">Tip:</strong> Una sílaba es un sonido o grupo de sonidos que pronunciamos en
-                un
-                solo impulso de voz
-            </footer>
-    </div>
+                    <button id="highContrast" class="flex items-center justify-between p-3 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all border border-slate-700 active:scale-95">
+                        <span class="font-bold">👁️ Contraste</span>
+                        <span id="contrastStatus" class="bg-slate-600 px-2 py-1 rounded text-xs uppercase">Normal</span>
+                    </button>
 
+                    <button id="largeText" class="flex items-center justify-between p-3 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all border border-slate-700 active:scale-95">
+                        <span class="font-bold">📖 Tamaño</span>
+                        <span id="textSizeStatus" class="bg-slate-600 px-2 py-1 rounded text-xs uppercase">Normal</span>
+                    </button>
 
+                    <hr class="border-slate-700 my-2">
 
-    <div class="container mx-auto">
+                    <button id="readAll" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold shadow-lg shadow-blue-900/20 active:scale-95 transition-all">
+                        📢 Leer Pantalla
+                    </button>
 
-
-        <header class="bg-white/90 backdrop-blur-xl rounded-2xl p-2 mb-4 shadow-xl border border-white/50">
-            <div class="stats flex justify-between items-center mb-6">
-                <div
-                    class="stat-item flex items-center gap-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-2 py-2 rounded-2xl">
-                    <span>🏆</span>
-                    <span id="score" class="text-xl font-bold">0</span>
+                    <button id="skipLevel" class="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-400 font-bold active:scale-95 transition-all">
+                        ⏭️ Saltar Nivel
+                    </button>
                 </div>
-                <div
-                    class="stat-item flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-2 rounded-2xl">
-                    <span>⭐</span>
-                    <span id="streak" class="text-xl font-bold">0</span>
-                </div>
-                <div class="hearts flex gap-1" id="hearts">
-                    <div
-                        class="heart active w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg">
-                        ❤️</div>
-                    <div
-                        class="heart active w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg">
-                        ❤️</div>
-                    <div
-                        class="heart active w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg">
-                        ❤️</div>
-                </div>
-
-            </div>
-            <div class="progress-bar bg-gray-200 rounded-2xl h-4 overflow-hidden shadow-inner">
-                <div class="progress-fill h-full bg-gradient-to-r from-emerald-500 to-blue-500 rounded-2xl transition-all duration-1000 shadow-lg"
-                    id="progressFill"></div>
-            </div>
-            <div class="level-text mt-4 text-center text-gray-600 font-semibold text-lg">
-                Nivel <span id="currentLevel">1</span> de <span id="totalLevels">5</span>
             </div>
 
-        </header>
+            <div id="tipBox" class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100 text-blue-800 shadow-sm">
+                <p class="text-sm">
+                    <span class="font-bold">💡 Tip:</span> 
+                    Una <span class="underline decoration-blue-300">sílaba</span> es cada golpe de voz con el que decimos una palabra.
+                </p>
+            </div>
+        </aside>
 
-        <main
-            class="game-card bg-white/90 backdrop-blur-xl rounded-3xl p-12 shadow-2xl border border-white/50 text-center">
-            <section id="gameScreen">
-                <div class="character-emoji text-4xl mb-4 mx-auto" id="characterEmoji">🏠</div>
-                <div class="character-name text-4xl font-black text-gray-800 mb-4 tracking-wide" id="characterName">ca__
+        <main class="flex-1 flex flex-col gap-6 order-1 lg:order-2">
+            <header class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                    <div class="flex gap-4">
+                        <div class="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-2xl flex items-center gap-2 font-bold">
+                            <span>🏆</span> <span id="score">0</span>
+                        </div>
+                        <div class="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-2xl flex items-center gap-2 font-bold">
+                            <span>🔥</span> <span id="streak">0</span>
+                        </div>
+                    </div>
+                    <div id="hearts" class="flex gap-2"></div>
                 </div>
-                <div class="character-hint text-xl text-gray-500 italic mb-10 font-medium" id="characterHint">Lugar
-                    donde vivimos.</div>
-                <div class="question text-2xl font-bold text-gray-700 mb-12 px-4 py-3 bg-gray-100/50 rounded-2xl"
-                    id="questionText">
-                    ¿Qué sílaba falta para completar la palabra?
+
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm font-bold text-slate-500 px-1">
+                        <span>Progreso del juego</span>
+                        <span>Nivel <span id="currentLevel">1</span>/<span id="totalLevels">5</span></span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden shadow-inner">
+                        <div id="progressFill" class="h-full bg-gradient-to-r from-blue-500 to-indigo-600 progress-transition" style="width: 0%"></div>
+                    </div>
                 </div>
-                <div class="options grid grid-cols-2 gap-3 mb-4" id="options"></div>
-            </section>
+            </header>
 
-            <section id="resultScreen" class="result-screen hidden" aria-live="polite">
-                <div class="result-icon text-9xl mb-8 mx-auto" id="resultIcon">✅</div>
-                <div class="result-text text-5xl font-black mb-6" id="resultText">¡Correcto!</div>
-                <div class="correct-answer text-2xl text-gray-600 font-semibold bg-green-100/50 p-6 rounded-2xl"
-                    id="correctAnswer">La palabra completa es: casa</div>
-            </section>
+            <div class="bg-white flex-1 rounded-3xl shadow-xl border border-slate-200 overflow-hidden flex flex-col items-center justify-center p-8 relative">
+                
+                <section id="gameScreen" class="w-full max-w-2xl text-center space-y-8">
+                    <div id="characterEmoji" class="text-8xl animate-bounce mb-4">🏠</div>
+                    <div class="space-y-2">
+                        <h2 id="characterName" class="text-6xl font-black tracking-widest text-slate-800 uppercase">CA__</h2>
+                        <p id="characterHint" class="text-xl text-slate-500 font-medium italic">Lugar donde vivimos.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl inline-block border border-slate-100">
+                        <p class="text-slate-600 font-bold">¿Qué sílaba completa la palabra?</p>
+                    </div>
+                    <div id="options" class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4"></div>
+                </section>
 
-            <section id="gameOverScreen" class="game-over hidden" aria-live="polite">
-                <div class="game-over-emoji text-9xl mb-8 mx-auto" id="gameOverEmoji">🏆</div>
-                <div class="game-over-title text-6xl font-black text-gray-800 mb-8" id="gameOverTitle">¡Felicitaciones!
-                </div>
-                <div
-                    class="final-score bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-3xl p-5 shadow-2xl mb-10">
-                    <div class="final-score-number text-6xl font-black mb-4" id="finalScore">0</div>
-                    <div class="final-levels text-2xl font-semibold" id="finalLevels">Niveles completados: 0/5</div>
-                </div>
-                <button
-                    class="restart-btn bg-gradient-to-r from-blue-500 to-purple-600 text-white px-12 py-6 rounded-3xl text-2xl font-black shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 transition-all duration-300"
-                    onclick="resetGame()">
-                    🔄 Jugar de Nuevo
-                </button>
+                <section id="resultScreen" class="hidden text-center space-y-6 animate-in fade-in zoom-in duration-300">
+                    <div id="resultIcon" class="text-9xl">✅</div>
+                    <h2 id="resultText" class="text-5xl font-black">¡Muy bien!</h2>
+                    <div id="correctAnswer" class="text-2xl bg-slate-100 px-8 py-4 rounded-2xl font-bold text-slate-700"></div>
+                </section>
 
-
-            </section>
-            
+                <section id="gameOverScreen" class="hidden text-center space-y-8 animate-in slide-in-from-bottom duration-500">
+                    <div id="gameOverEmoji" class="text-9xl">🏆</div>
+                    <h2 id="gameOverTitle" class="text-5xl font-black text-slate-800">¡Genial!</h2>
+                    <div class="bg-gradient-to-br from-indigo-600 to-blue-700 text-white p-8 rounded-3xl shadow-2xl transform -rotate-2">
+                        <p class="text-lg opacity-80 font-bold uppercase tracking-wider text-indigo-100">Puntaje Total</p>
+                        <p id="finalScore" class="text-7xl font-black my-2">0</p>
+                        <p id="finalLevels" class="font-medium text-indigo-100"></p>
+                    </div>
+                    <button onclick="resetGame()" class="group flex items-center gap-3 mx-auto bg-slate-900 text-white px-10 py-5 rounded-2xl text-xl font-bold hover:bg-slate-800 transition-all active:scale-95">
+                        <span>🔄 Jugar de nuevo</span>
+                    </button>
+                </section>
+            </div>
         </main>
-
-
     </div>
 
     <script>
-        // Juego original (igual)
         const levels = [
-            { word: "casa", display: "CA__", missing: "SA", options: ["SA", "SE", "SI", "SO"], emoji: "🏠", hint: "Lugar donde vivimos." },
-            { word: "pato", display: "pa__", missing: "to", options: ["to", "ta", "te", "ti"], emoji: "🦆", hint: "Animal que dice \"cuac\"." },
-            { word: "mesa", display: "me__", missing: "sa", options: ["sa", "se", "si", "so"], emoji: "🍽️", hint: "Mueble donde comemos." },
-            { word: "taza", display: "ta__", missing: "za", options: ["za", "ca", "sa", "cha"], emoji: "☕", hint: "Se usa para tomar café." },
-            { word: "pelota", display: "__lota", missing: "pe", options: ["pe", "pa", "pi", "po"], emoji: "⚽", hint: "Se usa para jugar al fútbol." }
+            { word: "CASA", display: "CA__", missing: "SA", options: ["SA", "SE", "SI", "SO"], emoji: "🏠", hint: "Lugar donde vivimos." },
+            { word: "PATO", display: "PA__", missing: "TO", options: ["TO", "TA", "TE", "TI"], emoji: "🦆", hint: "Animal que dice cuac." },
+            { word: "MESA", display: "ME__", missing: "SA", options: ["SA", "SE", "SI", "SO"], emoji: "🍽️", hint: "Mueble donde comemos." },
+            { word: "TAZA", display: "TA__", missing: "ZA", options: ["ZA", "CA", "SA", "CHA"], emoji: "☕", hint: "Se usa para tomar café." },
+            { word: "PELOTA", display: "__LOTA", missing: "PE", options: ["PE", "PA", "PI", "PO"], emoji: "⚽", hint: "Se usa para jugar al fútbol." }
         ];
 
         let currentLevel = 0, score = 0, streak = 0, hearts = 3;
-        let voiceEnabled = false, synth, highContrast = false, largeText = false;
+        let voiceEnabled = false, highContrast = false, largeText = false;
+        const synth = window.speechSynthesis;
 
-        // Inicializar síntesis de voz
-        function initVoice() {
-            if ('speechSynthesis' in window) {
-                synth = window.speechSynthesis;
-                synth.lang = 'es-ES';
-                synth.rate = 0.9;
-                synth.pitch = 1;
+        // Función para barajar un array (Algoritmo Fisher-Yates)
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
             }
+            return newArray;
         }
 
-        // Hablar texto
-        function speak(text, priority = 'normal') {
+        function speak(text) {
             if (!voiceEnabled || !synth) return;
-
-            synth.cancel(); // Cancelar voz anterior
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'es-AR';
-
-            utterance.rate = priority === 'high' ? 1.1 : 0.9;
-            utterance.pitch = 1;
-            utterance.volume = 1;
-            synth.speak(utterance);
+            synth.cancel(); 
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'es-ES';
+            utter.rate = 0.9;
+            synth.speak(utter);
         }
 
-        // ACCESIBILIDAD - Event listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            initVoice();
-
-            // Voz toggle
-            document.getElementById('voiceToggle').onclick = () => {
-                voiceEnabled = !voiceEnabled;
-                document.getElementById('voiceStatus').textContent = voiceEnabled ? 'Voz ON' : 'Voz OFF';
-                document.getElementById('voiceToggle').classList.toggle('active', voiceEnabled);
-                if (voiceEnabled) speak('Voz activada');
-            };
-
-            // Alto contraste
-            document.getElementById('highContrast').onclick = () => {
-                highContrast = !highContrast;
-                document.body.classList.toggle('high-contrast', highContrast);
-                document.getElementById('highContrast').classList.toggle('active', highContrast);
-                speak(highContrast ? 'Alto contraste activado' : 'Alto contraste desactivado');
-            };
-
-            // Texto grande
-            document.getElementById('largeText').onclick = () => {
-                largeText = !largeText;
-                document.body.classList.toggle('large-text', largeText);
-                document.getElementById('largeText').classList.toggle('active', largeText);
-                speak(largeText ? 'Texto grande activado' : 'Texto normal');
-            };
-
-            // Skip nivel
-            document.getElementById('skipLevel').onclick = () => {
-                if (currentLevel < levels.length - 1) {
-                    currentLevel++;
-                    score += 50;
-                    updateDisplay();
-                    speak(`Nivel ${currentLevel + 1} cargado`);
-                }
-            };
-
-            // Leer todo
-            document.getElementById('readAll').onclick = () => {
-                const level = levels[currentLevel];
-                speak(`Nivel ${currentLevel + 1}. ${level.hint}. La palabra es ${level.display}. Opciones: ${level.options.join(', ')}`, 'high');
-            };
-
-            // Pausar voz
-            document.getElementById('pauseVoice').onclick = () => {
-                synth?.cancel();
-                speak('Voz pausada');
-            };
-        });
-
-        // Función updateDisplay con accesibilidad
         function updateDisplay() {
+            const level = levels[currentLevel];
+            
             document.getElementById('score').textContent = score;
             document.getElementById('streak').textContent = streak;
             document.getElementById('currentLevel').textContent = currentLevel + 1;
             document.getElementById('totalLevels').textContent = levels.length;
-            document.getElementById('progressFill').style.width = `${((currentLevel + 1) / levels.length) * 100}%`;
+            document.getElementById('progressFill').style.width = `${(currentLevel / levels.length) * 100}%`;
 
-            // Actualizar corazones
-            const heartsContainer = document.getElementById('hearts');
-            heartsContainer.innerHTML = '';
-            for (let i = 0; i < 3; i++) {
-                const heart = document.createElement('div');
-                heart.className = `heart w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold shadow-lg ${i < hearts ? 'bg-red-500 text-white' : 'bg-gray-300 text-gray-500'}`;
-                heart.textContent = '❤️';
-                heart.setAttribute('aria-label', i < hearts ? 'Vida activa' : 'Vida perdida');
-                heartsContainer.appendChild(heart);
+            const heartsBox = document.getElementById('hearts');
+            heartsBox.innerHTML = '';
+            for(let i=0; i<3; i++) {
+                const h = document.createElement('span');
+                h.textContent = i < hearts ? '❤️' : '🖤';
+                h.className = `text-2xl ${i >= hearts ? 'grayscale opacity-30' : 'drop-shadow-sm'}`;
+                heartsBox.appendChild(h);
             }
 
-            const level = levels[currentLevel];
             document.getElementById('characterEmoji').textContent = level.emoji;
             document.getElementById('characterName').textContent = level.display;
             document.getElementById('characterHint').textContent = level.hint;
 
-            // Hablar nivel si voz activa
-            if (voiceEnabled) {
-                speak(`Nivel ${currentLevel + 1}. Pista: ${level.hint}. Completa la palabra ${level.display}`);
-            }
+            // --- Lógica de Barajado ---
+            const optionsBox = document.getElementById('options');
+            optionsBox.innerHTML = '';
+            
+            // Barajamos las opciones antes de mostrarlas
+            const shuffledOptions = shuffleArray(level.options);
 
-            const optionsContainer = document.getElementById('options');
-            optionsContainer.innerHTML = '';
-            level.options.forEach((option, idx) => {
+            shuffledOptions.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = 'option-btn bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-2xl font-black py-8 px-6 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500';
-                btn.textContent = option;
-                btn.setAttribute('aria-label', `Opción ${idx + 1}: ${option}`);
-                btn.onclick = () => handleAnswer(option);
-                optionsContainer.appendChild(btn);
+                btn.className = "bg-white border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 text-indigo-600 text-2xl font-black p-6 rounded-2xl shadow-sm transition-all active:scale-90 focus:ring-4 focus:ring-indigo-200";
+                btn.textContent = opt;
+                btn.onclick = () => handleAnswer(opt);
+                optionsBox.appendChild(btn);
             });
+
+            if(voiceEnabled) speak(`Nivel ${currentLevel + 1}. Pista: ${level.hint}. La palabra es: ${level.display.replace('__', ' espacio ')}`);
         }
 
-        function handleAnswer(answer) {
-            const optionsContainer = document.getElementById('options');
-            Array.from(optionsContainer.children).forEach(btn => {
-                btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-            });
-
+        function handleAnswer(choice) {
             const level = levels[currentLevel];
-            const isCorrect = answer === level.missing;
-
+            const isCorrect = choice.toUpperCase() === level.missing.toUpperCase();
+            
+            document.querySelectorAll('#options button').forEach(b => b.disabled = true);
             document.getElementById('gameScreen').classList.add('hidden');
             document.getElementById('resultScreen').classList.remove('hidden');
-            document.getElementById('tipBox').classList.add('hidden');
-
-            document.getElementById('resultIcon').textContent = isCorrect ? '✅' : '❌';
-            document.getElementById('resultText').textContent = isCorrect ? '¡Correcto!' : '¡Incorrecto!';
-            document.getElementById('resultText').className = `result-text text-5xl font-black mb-6 ${isCorrect ? 'text-emerald-600' : 'text-red-600'}`;
-            document.getElementById('correctAnswer').textContent = `La palabra completa es: ${level.word}`;
-
-            // Voz resultado
-            if (voiceEnabled) {
-                speak(isCorrect ? `¡Correcto! La palabra es ${level.word}` : `Incorrecto. La palabra correcta es ${level.word}`);
+            
+            const resIcon = document.getElementById('resultIcon');
+            const resText = document.getElementById('resultText');
+            
+            if(isCorrect) {
+                resIcon.textContent = '✅';
+                resText.textContent = '¡Correcto!';
+                resText.className = "text-5xl font-black text-emerald-600";
+                score += 100 + (streak * 10);
+                streak++;
+                speak("¡Excelente! La palabra es " + level.word);
+            } else {
+                resIcon.textContent = '❌';
+                resText.textContent = '¡Casi!';
+                resText.className = "text-5xl font-black text-red-600";
+                hearts--;
+                streak = 0;
+                speak("No te preocupes. La palabra correcta era " + level.word);
             }
 
+            document.getElementById('correctAnswer').textContent = `La palabra completa es: ${level.word}`;
+
             setTimeout(() => {
-                if (isCorrect) {
-                    score += 100;
-                    streak += 1;
-                    if (currentLevel < levels.length - 1) {
-                        currentLevel += 1;
-                        showNextLevel();
-                    } else {
-                        showGameOver(true);
-                    }
+                if(hearts <= 0) {
+                    showGameOver(false);
+                } else if (currentLevel < levels.length - 1 && isCorrect) {
+                    currentLevel++;
+                    resetScreens();
+                } else if (!isCorrect) {
+                    resetScreens();
                 } else {
-                    hearts -= 1;
-                    streak = 0;
-                    if (hearts <= 0) {
-                        showGameOver(false);
-                    } else {
-                        showNextLevel();
-                    }
+                    showGameOver(true);
                 }
-            }, voiceEnabled ? 4000 : 3000);
+            }, 2500);
         }
 
-        function showNextLevel() {
+        function resetScreens() {
             document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
             document.getElementById('gameScreen').classList.remove('hidden');
-            document.getElementById('tipBox').classList.remove('hidden');
             updateDisplay();
         }
 
-        function showGameOver(isVictory) {
+        function showGameOver(victory) {
             document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.remove('hidden');
-            document.getElementById('tipBox').classList.add('hidden');
-
-            document.getElementById('gameOverEmoji').textContent = isVictory ? '🏆' : '💔';
-            document.getElementById('gameOverTitle').textContent = isVictory ? '¡Felicitaciones!' : '¡Inténtalo de nuevo!';
-            document.getElementById('finalScore').textContent = `Puntuación Final: ${score}`;
-            const levelsText = `Niveles completados: ${currentLevel + (isVictory ? 1 : 0)}/${levels.length}`;
-            document.getElementById('finalLevels').textContent = levelsText;
-
-            if (voiceEnabled) {
-                speak(isVictory
-                    ? `¡Felicitaciones! Completaste ${levelsText} con ${score} puntos.`
-                    : `Game over. Puntuación final ${score} puntos. ¡Inténtalo de nuevo!`
-                );
-            }
+            
+            document.getElementById('gameOverEmoji').textContent = victory ? '🏆' : '💪';
+            document.getElementById('gameOverTitle').textContent = victory ? '¡Campeón!' : '¡Sigue intentando!';
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalLevels').textContent = `Completaste ${currentLevel + (victory ? 1 : 0)} de ${levels.length} niveles`;
+            
+            speak(victory ? "¡Felicitaciones! Has ganado el juego." : "Buen intento. Vuelve a probar.");
         }
 
         function resetGame() {
-            currentLevel = 0;
-            score = 0;
-            streak = 0;
-            hearts = 3;
-            document.getElementById('gameOverScreen').classList.add('hidden');
-            document.getElementById('resultScreen').classList.add('hidden');
-            document.getElementById('gameScreen').classList.remove('hidden');
-            document.getElementById('tipBox').classList.remove('hidden');
-            updateDisplay();
-
-            if (voiceEnabled) {
-                speak('Juego reiniciado. ¡Buena suerte!');
-            }
+            currentLevel = 0; score = 0; streak = 0; hearts = 3;
+            resetScreens();
         }
 
-        // Inicializar juego
+        document.getElementById('voiceToggle').onclick = () => {
+            voiceEnabled = !voiceEnabled;
+            const status = document.getElementById('voiceStatus');
+            status.textContent = voiceEnabled ? 'ON' : 'OFF';
+            status.className = voiceEnabled ? 'bg-emerald-500 px-2 py-1 rounded text-xs uppercase' : 'bg-red-500 px-2 py-1 rounded text-xs uppercase';
+            if(voiceEnabled) speak("Voz activada");
+        };
+
+        document.getElementById('highContrast').onclick = () => {
+            highContrast = !highContrast;
+            document.documentElement.classList.toggle('high-contrast');
+            document.getElementById('contrastStatus').textContent = highContrast ? 'Alto' : 'Normal';
+        };
+
+        document.getElementById('largeText').onclick = () => {
+            largeText = !largeText;
+            document.documentElement.classList.toggle('large-text');
+            document.getElementById('textSizeStatus').textContent = largeText ? 'Grande' : 'Normal';
+        };
+
+        document.getElementById('readAll').onclick = () => {
+            const level = levels[currentLevel];
+            speak(`Estás en el nivel ${currentLevel + 1}. Puntaje ${score}. Pista: ${level.hint}. Palabra: ${level.display}.`);
+        };
+
+        document.getElementById('skipLevel').onclick = () => {
+            if(currentLevel < levels.length - 1) {
+                currentLevel++;
+                updateDisplay();
+            }
+        };
+
         updateDisplay();
     </script>
-
 </body>
-
 </html>
