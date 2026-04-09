@@ -1,6 +1,7 @@
 
 SILABAS_JUEGO_1.0.0
 # https://jefrete.github.io/juego_hm/
+# https://jefrete.github.io/COMPLETA_LA_SILABA/
 Juego de Sílabas
 
 Completa la silaba
